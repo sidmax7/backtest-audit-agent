@@ -216,7 +216,7 @@ The one miss is the interesting one, and it's a clean demonstration of the whole
 
 ## v1 locked (`git tag v1`)
 
-Everything above this line (Iterations 1-13) is v1: 8 registered strategies, three verification tools (`shift_test`, `slippage_test`, `static_scan`), uncertainty reporting, leak localization, dual-provider LLM support, and full trajectory logging — all deterministic and offline except the two audit binaries' actual LLM calls. All 4 `instructions.md` §6 submission deliverables are complete (`README.md`, `REPRODUCTION.md`, `VIDEO_SCRIPT.md`, `trajectories/`).
+Everything above this line (Iterations 1-13) is v1: 8 registered strategies, three verification tools (`shift_test`, `slippage_test`, `static_scan`), uncertainty reporting, leak localization, dual-provider LLM support, and full trajectory logging — all deterministic and offline except the two audit binaries' actual LLM calls. All 4 `instructions.md` §6 submission deliverables are complete (`README.md`, `REPRODUCTION.md`, the solution video, `trajectories/`).
 
 **Iteration 14 below is a small, deliberate exception to "no further v1-scope work" — a self-certification gap found while prepping the demo video, additive to the locked schema, not a change to any locked threshold or verdict logic.**
 

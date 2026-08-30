@@ -115,5 +115,5 @@ To maintain high engineering fidelity within the challenge timeline, scope is de
 
 - **Agent Directives & Build Order:** [agents.md](agents.md)
 - **Operating Guidelines:** [instructions.md](instructions.md)
-- **Competition Framework:** [Frontier_Engineering_Challenge_2026.md](Frontier_Engineering_Challenge_2026.md)
+- **Competition Framework:** micro1 Frontier Engineering Challenge 2026 (internal rules doc, not redistributed in this repository)
 - **External Prior Art:** [backtest-audit Repository](https://github.com/mythofstars/backtest-audit)

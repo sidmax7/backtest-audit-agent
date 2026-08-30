@@ -4,7 +4,7 @@
 # explaining out loud otherwise ("empty array means no issues"). This just
 # reformats the same real tool output, it doesn't change what was checked.
 # Requires the venv from REPRODUCTION.md's prior-art step to be active
-# (`source venv/bin/activate` from frontier-challenge/, or wherever it was
+# (`source venv/bin/activate` from the repo root, or wherever it was
 # created).
 set -euo pipefail
 cd "$(dirname "$0")"

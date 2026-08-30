@@ -53,7 +53,12 @@ fn main() -> Result<()> {
         .unwrap_or("csv_input")
         .to_string();
 
-    let mut trajectory = Trajectory::new("audit_csv", &name, "none", "n/a (deterministic, no LLM call)");
+    let mut trajectory = Trajectory::new(
+        "audit_csv",
+        &name,
+        "none",
+        "n/a (deterministic, no LLM call)",
+    );
     trajectory.record_reasoning(format!(
         "Loaded {} bars and {} feature column(s) from CSV; execution_offset={}. No LLM in this path -- the shift-test is deterministic.",
         series.bars.len(),

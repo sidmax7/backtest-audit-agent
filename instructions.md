@@ -68,8 +68,7 @@ When you are activated in this conversation or repository, follow this 3-step ch
 
 1. **Inspect Existing Files:**
    * Review [instructions.md](instructions.md)
-   * Review [Frontier_Engineering_Challenge_2026.md](Frontier_Engineering_Challenge_2026.md)
-   * Review [micro1_Hackathon_Uno_Agentic_Workflows.md](micro1_Hackathon_Uno_Agentic_Workflows.md)
+   * Review the micro1 Frontier Engineering Challenge 2026 rules and the Hackathon Uno Agentic Workflows brief (internal rules docs, not redistributed in this repository)
 2. **Review Current Experiments:**
    * Check what baseline is established and what iteration is currently being tested.
 3. **Verify Dependencies & Configs:**
@@ -138,8 +137,8 @@ Every model working on this project must ensure the final deliverables are compl
   - Single command to run the baseline evaluation.
   - Single command to run the advanced agent solution.
   - Hardware requirements, versions, approximate runtime, and API cost estimate.
-- [ ] **Deliverable 3: Solution Video Script**
-  - Timed outline for a $\le 5$ minute demo video.
+- [ ] **Deliverable 3: Solution Video**
+  - $\le 5$ minute demo video, submitted separately from this repository.
   - Flow: Problem $\rightarrow$ Baseline Failure $\rightarrow$ Agent Solution $\rightarrow$ Benchmark Proof $\rightarrow$ What was removed.
 - [ ] **Deliverable 4: Agent Trajectories (`trajectories/`)**
   - Clean trace logs showing: User Input $\rightarrow$ Agent Thought $\rightarrow$ Tool Call $\rightarrow$ Tool Output $\rightarrow$ Verification Step $\rightarrow$ Final Output.

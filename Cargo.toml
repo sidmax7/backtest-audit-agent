@@ -12,6 +12,10 @@ path = "src/bin/baseline.rs"
 name = "advanced"
 path = "src/bin/advanced.rs"
 
+[[test]]
+name = "acceptance"
+harness = false
+
 [dependencies]
 rand = "0.8"
 rand_chacha = "0.3"

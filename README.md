@@ -55,7 +55,6 @@ That loop is `src/bin/advanced.rs`. `src/bin/baseline.rs` is the naive compariso
 ## Architecture
 
 ```
-frontier-challenge/
 ├── src/
 │   ├── engine/       synthetic seeded OHLCV generator + backtest loop (feature -> Sharpe)
 │   ├── strategies/   6 leaky strategies (one per problem.md leakage category,
@@ -181,12 +180,11 @@ Every run of `baseline` or `advanced` writes one structured JSON trace to `traje
 Full step-by-step instructions, including hardware/runtime/cost estimates: [REPRODUCTION.md](REPRODUCTION.md). Short version:
 
 ```bash
-cd frontier-challenge
 cargo test --lib              # deterministic engine + shift-test evidence, no network, no API key
 cp .env.example .env          # fill in ANTHROPIC_API_KEY (or GEMINI_API_KEY + LLM_PROVIDER=gemini)
 cargo run --bin baseline  -- src/strategies/forward_window_lookahead.rs
 cargo run --bin advanced  -- src/strategies/forward_window_lookahead.rs
-cargo test --test acceptance -- --nocapture   # full baseline-vs-advanced accuracy table
+cargo test --test acceptance   # full baseline-vs-advanced accuracy table
 ```
 
 ## Live evaluation results
@@ -211,7 +209,7 @@ But a single run's score is the wrong thing to trust here — `execution_timing_
 | 2 | clean (**wrong**) | leaky (correct, needed a self-correction retry) |
 | 3 (after `static_scan` added) | leaky (correct) | leaky (correct, first pass, no retry) |
 
-`baseline`'s one correct call is a single unverified LLM guess — its own trajectory says so (`confidence: "unverified (single LLM call, no empirical check)"`) — it has no way to tell "I'm right" from "I got lucky." `advanced` has been correct on all 3 runs, every time backed by the same real `shift_test` numbers, and the third run shows `static_scan` measurably reducing how much correction the agent needed to get there. All trajectories are real, in `trajectories/`, produced by `cargo test --test acceptance -- --nocapture` and individual `cargo run` invocations. Full numbers: CHANGELOG Iterations 5 and 7.
+`baseline`'s one correct call is a single unverified LLM guess — its own trajectory says so (`confidence: "unverified (single LLM call, no empirical check)"`) — it has no way to tell "I'm right" from "I got lucky." `advanced` has been correct on all 3 runs, every time backed by the same real `shift_test` numbers, and the third run shows `static_scan` measurably reducing how much correction the agent needed to get there. All trajectories are real, in `trajectories/`, produced by `cargo test --test acceptance` and individual `cargo run` invocations. Full numbers: CHANGELOG Iterations 5 and 7.
 
 ### Prior art, for real
 

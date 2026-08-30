@@ -1,6 +1,6 @@
 # Prior-Art Comparison: `backtest-audit` Against This Project's Test Battery
 
-`problem.md` names [backtest-audit](https://github.com/mythofstars/backtest-audit) as the prior art this project differentiates against, and quotes its own documented limitations. This directory makes that claim concrete and reproducible instead of asserted: real Python/pandas translations of all 5 seeded strategies from `frontier-challenge/src/strategies/`, actually checked with the real, installed tool.
+`problem.md` names [backtest-audit](https://github.com/mythofstars/backtest-audit) as the prior art this project differentiates against, and quotes its own documented limitations. This directory makes that claim concrete and reproducible instead of asserted: real Python/pandas translations of all 5 seeded strategies from `src/strategies/`, actually checked with the real, installed tool.
 
 ## What's here
 

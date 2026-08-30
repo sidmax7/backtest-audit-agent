@@ -12,7 +12,6 @@ Step-by-step instructions to build and run this from a blank machine. See [READM
 ## 1. Clone and build
 
 ```bash
-cd frontier-challenge
 cargo build
 ```
 
@@ -65,7 +64,7 @@ Prints a verdict backed by an actual `shift_test` rerun, including the real Shar
 ## 6. Full evaluation: baseline vs. advanced accuracy
 
 ```bash
-cargo test --test acceptance -- --nocapture
+cargo test --test acceptance
 ```
 
 Runs both binaries against all 8 seeded strategies and prints a side-by-side accuracy table. This makes real LLM calls (roughly 25-35 requests total: 8 for baseline, 2-4 each for advanced depending on tool use and whether the self-correction retry fires) and is skipped — not failed — if no API key is configured, so a plain `cargo test` (without `--test acceptance` explicitly) stays free. An `INCONCLUSIVE` verdict from `advanced` is reported in the table and excluded from the accuracy denominator rather than scored as wrong — see README "Uncertainty reporting".
@@ -78,7 +77,7 @@ This is Python tooling, kept separate from the Rust crate on purpose (`problem.m
 python3 -m venv venv         # create the venv BEFORE cd'ing in -- see caution below
 source venv/bin/activate
 pip install backtest-audit
-cd ../eval/prior_art
+cd eval/prior_art
 backtest-audit check .
 ```
 
@@ -137,7 +136,7 @@ All three were run live (baseline + advanced) against their respective new/affec
 
 ## Runtime and cost estimate (measured, not projected)
 
-Real measured token counts, not projections. The 5-strategy figures are summed from the 10 trajectory files written by an actual `cargo test --test acceptance -- --nocapture` run (`gemini-3.5-flash-lite`, with the `static_scan` tool); the 3 later strategies were each run live individually, and their most recent trajectory files are summed here:
+Real measured token counts, not projections. The 5-strategy figures are summed from the 10 trajectory files written by an actual `cargo test --test acceptance` run (`gemini-3.5-flash-lite`, with the `static_scan` tool); the 3 later strategies were each run live individually, and their most recent trajectory files are summed here:
 
 | | input tokens | output tokens |
 |---|---|---|

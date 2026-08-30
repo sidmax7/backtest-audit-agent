@@ -147,7 +147,7 @@ v1 is locked as of `git tag v1`. All items below are complete; no further v1 sco
 - [x] `cargo test` runs the full evaluation across all seeded strategies and reports detection accuracy for both baseline and advanced agent.
 - [x] `trajectories/` contains a JSON trace (per the §4 schema) for every seeded strategy, for both `baseline` and `advanced` runs.
 - [x] [README.md](README.md) and [CHANGELOG.md](CHANGELOG.md) are fully up to date and substantive before declaring completion.
-- [x] [VIDEO_SCRIPT.md](VIDEO_SCRIPT.md) (Deliverable 3, `instructions.md` §6) is a timed, shootable outline covering Problem → Baseline Failure → Agent Solution → Benchmark Proof → What Was Removed, sourced from real captured evidence (trajectories, CHANGELOG numbers) rather than invented B-roll.
+- [x] The solution video (Deliverable 3, `instructions.md` §6, ≤5 minutes) covers Problem → Baseline Failure → Agent Solution → Benchmark Proof → What Was Removed, sourced from real captured evidence (trajectories, CHANGELOG numbers) rather than invented B-roll. Submitted separately from this repository.
 
 All four `instructions.md` §6 submission deliverables are complete as of this line.
 

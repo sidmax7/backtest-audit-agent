@@ -5,8 +5,13 @@
 //! This test makes real LLM API calls and costs real money, so it is
 //! opt-in: it skips (not fails) when no API key is configured for the
 //! active `LLM_PROVIDER`, keeping a plain `cargo test` free and fully
-//! offline. Set the relevant key (see .env.example) and run
-//! `cargo test --test acceptance -- --nocapture` to see the accuracy table.
+//! offline. Runs with `harness = false` (see Cargo.toml) specifically so
+//! that skip warning is never silently swallowed -- the default libtest
+//! harness captures all output for a passing test and only shows it with
+//! `--nocapture`, which would make "no API key configured" look identical
+//! to "everything's fine" in a plain `cargo test` run. Set the relevant
+//! key (see .env.example) and run `cargo test --test acceptance` to see
+//! the accuracy table -- no extra flags needed.
 //! Each invocation writes its own trajectory file to trajectories/ as a
 //! side effect (via the telemetry module both binaries use), satisfying the
 //! "trajectories/ contains a trace for every seeded strategy, for both
@@ -76,14 +81,15 @@ fn expected(is_leaky: bool) -> AgentVerdict {
     }
 }
 
-#[test]
-fn baseline_and_advanced_detection_accuracy() {
+/// Plain `fn main()`, not `#[test]` -- see the `harness = false` note above
+/// the module doc comment for why.
+fn main() {
     if !active_api_key_is_configured() {
         eprintln!(
-            "SKIPPED: no API key configured for the active LLM_PROVIDER (see .env.example). \
-             This test makes real, billed LLM calls and is opt-in by design -- \
-             set ANTHROPIC_API_KEY or GEMINI_API_KEY and rerun with \
-             `cargo test --test acceptance -- --nocapture` to see the accuracy table."
+            "WARNING: SKIPPED -- no API key configured for the active LLM_PROVIDER \
+             (see .env.example). This test makes real, billed LLM calls and is \
+             opt-in by design -- set ANTHROPIC_API_KEY or GEMINI_API_KEY and rerun \
+             `cargo test --test acceptance` to see the accuracy table."
         );
         return;
     }
