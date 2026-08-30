@@ -1,0 +1,100 @@
+{
+  "run_id": "d32140d1-cf1a-4b74-8eab-15b96f93b823",
+  "binary": "advanced",
+  "strategy": "execution_realism_leak",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "started_at": "2026-08-30T07:10:12.100400926+00:00",
+  "steps": [
+    {
+      "type": "reasoning",
+      "step": 1,
+      "content": "Read a 890-byte strategy (comments stripped before showing the LLM); three tools are available (static_scan, shift_test, slippage_test)."
+    },
+    {
+      "type": "tool_call",
+      "step": 2,
+      "tool": "static_scan",
+      "input": {
+        "strategy": "execution_realism_leak"
+      }
+    },
+    {
+      "type": "tool_output",
+      "step": 3,
+      "output": {
+        "findings": []
+      }
+    },
+    {
+      "type": "tool_call",
+      "step": 4,
+      "tool": "shift_test",
+      "input": {
+        "hypothesis": "Feature uses prev_ret (bar[i] vs bar[i-1]), which looks clean temporally, but realized_return uses intra-bar highs/lows and adds them to close_to_close return, which might hide look-ahead or execution leakage.",
+        "strategy": "execution_realism_leak"
+      }
+    },
+    {
+      "type": "tool_output",
+      "step": 5,
+      "output": {
+        "components": [
+          {
+            "delta": 2.2722482002702304,
+            "name": "feature",
+            "verdict": "Clean"
+          }
+        ],
+        "delta": 2.2722482002702304,
+        "sharpe_original": 1.7434087944764625,
+        "sharpe_shifted": -0.5288394057937681
+      }
+    },
+    {
+      "type": "tool_call",
+      "step": 6,
+      "tool": "slippage_test",
+      "input": {
+        "strategy": "execution_realism_leak"
+      }
+    },
+    {
+      "type": "tool_output",
+      "step": 7,
+      "output": {
+        "delta": 4.412264576114245,
+        "sharpe_as_declared": 6.155673370590708,
+        "sharpe_honest_fill": 1.7434087944764625
+      }
+    },
+    {
+      "type": "reasoning",
+      "step": 8,
+      "content": "LEAKY\n\nThe static scan found no temporal window violations, and the `shift_test` shows that shifting the feature forward degrades the Sharpe ratio significantly (from 1.743 to -0.529), confirming the feature itself is temporally sound. \n\nHowever, the strategy is severely leaky on the execution-realism axis. The `slippage_test` reveals that the strategy's declared `realized_return` inflates the Sharpe ratio from an honest 1.743 up to 6.156 (a massive delta of 4.412) by assuming fills at intra-bar extremes (`bar.low` for longs and `bar.high` for shorts) that are unachievable in reality. Because of this major execution leakage, the strategy is classified as LEAKY."
+    },
+    {
+      "type": "verification",
+      "step": 9,
+      "content": "shift_test: sharpe_original=1.743 sharpe_shifted=-0.529 delta=2.272 -> two-signal rule says Clean"
+    },
+    {
+      "type": "verification",
+      "step": 10,
+      "content": "slippage_test: sharpe_as_declared=6.156 sharpe_honest_fill=1.743 delta=4.412 -> Leaky"
+    },
+    {
+      "type": "final_verdict",
+      "step": 11,
+      "verdict": "LEAKY",
+      "sharpe_delta": 2.2722482002702304,
+      "confidence": "model agrees with the combined empirical rule"
+    }
+  ],
+  "tokens_used": {
+    "input": 6123,
+    "output": 265
+  },
+  "wall_clock_ms": 4890,
+  "finished_at": "2026-08-30T07:10:16.991123632+00:00"
+}

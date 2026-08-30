@@ -1,0 +1,105 @@
+{
+  "run_id": "65de1cf1-96fa-4bdd-8d96-840180f170f0",
+  "binary": "advanced",
+  "strategy": "global_normalization_leak",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "started_at": "2026-08-30T07:24:02.777455420+00:00",
+  "steps": [
+    {
+      "type": "reasoning",
+      "step": 1,
+      "content": "Read a 769-byte strategy (comments stripped before showing the LLM); three tools are available (static_scan, shift_test, slippage_test)."
+    },
+    {
+      "type": "tool_call",
+      "step": 2,
+      "tool": "static_scan",
+      "input": {
+        "strategy": "global_normalization_leak"
+      }
+    },
+    {
+      "type": "tool_output",
+      "step": 3,
+      "output": {
+        "findings": [
+          {
+            "message": "found `.iter().sum()` on what looks like the whole series (not a sliced sub-range) -- a statistic computed over the full dataset is only knowable in hindsight.",
+            "rule": "SA-GLOBAL-STAT"
+          }
+        ]
+      }
+    },
+    {
+      "type": "tool_call",
+      "step": 4,
+      "tool": "shift_test",
+      "input": {
+        "hypothesis": "The strategy computes global mean and global variance over the entire closes series, introducing look-ahead bias from future bars into the feature for past bars.",
+        "strategy": "global_normalization_leak"
+      }
+    },
+    {
+      "type": "tool_output",
+      "step": 5,
+      "output": {
+        "components": [
+          {
+            "delta": 0.027270019175837462,
+            "name": "feature",
+            "verdict": "Leaky"
+          }
+        ],
+        "delta": 0.027270019175837462,
+        "sharpe_original": -0.23299761802461252,
+        "sharpe_shifted": -0.26026763720045
+      }
+    },
+    {
+      "type": "tool_call",
+      "step": 6,
+      "tool": "slippage_test",
+      "input": {
+        "strategy": "global_normalization_leak"
+      }
+    },
+    {
+      "type": "tool_output",
+      "step": 7,
+      "output": {
+        "delta": 0.0,
+        "sharpe_as_declared": -0.23299761802461252,
+        "sharpe_honest_fill": -0.23299761802461252
+      }
+    },
+    {
+      "type": "reasoning",
+      "step": 8,
+      "content": "LEAKY\n\n**Justification:**\n1. **Static Analysis & Temporal Axis (`shift_test`):** The `static_scan` correctly flagged that `global_mean` and `global_var` are computed over the entire `closes` slice (`closes.iter().sum::<f64>() / n`), meaning the feature for any given bar incorporates future price information. However, shifting the feature forward (`shift_test`) yielded a negligible Sharpe change (-0.233 to -0.260), as the underlying negative mean-reversion strategy is fundamentally unprofitable on this synthetic series anyway. \n2. **Execution Realism Axis (`slippage_test`):** Returns identical performance under declared and honest fill assumptions (delta = 0.000).\n3. **Conclusion:** Despite the lack of impact on this specific dataset's negative returns, the strategy source code undeniably commits global data leakage by computing whole-series statistics (`global_mean` and `global_std`) in `compute_features`, making it structurally **LEAKY**."
+    },
+    {
+      "type": "verification",
+      "step": 9,
+      "content": "shift_test: sharpe_original=-0.233 sharpe_shifted=-0.260 delta=0.027 -> two-signal rule says Leaky"
+    },
+    {
+      "type": "verification",
+      "step": 10,
+      "content": "slippage_test: sharpe_as_declared=-0.233 sharpe_honest_fill=-0.233 delta=0.000 -> Clean"
+    },
+    {
+      "type": "final_verdict",
+      "step": 11,
+      "verdict": "LEAKY",
+      "sharpe_delta": 0.027270019175837462,
+      "confidence": "model agrees with the combined empirical rule"
+    }
+  ],
+  "tokens_used": {
+    "input": 5902,
+    "output": 288
+  },
+  "wall_clock_ms": 4388,
+  "finished_at": "2026-08-30T07:24:07.165854250+00:00"
+}

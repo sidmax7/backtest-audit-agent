@@ -1,0 +1,28 @@
+{
+  "run_id": "233797ba-adcb-4064-80be-51b8bf4cfd7e",
+  "binary": "baseline",
+  "strategy": "mixed_signal_reversion",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "started_at": "2026-08-30T07:25:05.096477553+00:00",
+  "steps": [
+    {
+      "type": "reasoning",
+      "step": 1,
+      "content": "Single-shot read of a 1677-byte strategy (comments stripped before showing the LLM), no tool use available."
+    },
+    {
+      "type": "final_verdict",
+      "step": 2,
+      "verdict": "LEAKY",
+      "sharpe_delta": 0.0,
+      "confidence": "unverified (single LLM call, no empirical check)"
+    }
+  ],
+  "tokens_used": {
+    "input": 638,
+    "output": 66
+  },
+  "wall_clock_ms": 1190,
+  "finished_at": "2026-08-30T07:25:06.287137589+00:00"
+}

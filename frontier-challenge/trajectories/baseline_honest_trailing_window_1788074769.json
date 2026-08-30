@@ -1,0 +1,28 @@
+{
+  "run_id": "01de21f6-8bef-475c-b79b-21db75c58902",
+  "binary": "baseline",
+  "strategy": "honest_trailing_window",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "started_at": "2026-08-30T07:26:08.317198139+00:00",
+  "steps": [
+    {
+      "type": "reasoning",
+      "step": 1,
+      "content": "Single-shot read of a 563-byte strategy (comments stripped before showing the LLM), no tool use available."
+    },
+    {
+      "type": "final_verdict",
+      "step": 2,
+      "verdict": "CLEAN",
+      "sharpe_delta": 0.0,
+      "confidence": "unverified (single LLM call, no empirical check)"
+    }
+  ],
+  "tokens_used": {
+    "input": 282,
+    "output": 63
+  },
+  "wall_clock_ms": 1117,
+  "finished_at": "2026-08-30T07:26:09.434395130+00:00"
+}

@@ -1,0 +1,53 @@
+{
+  "run_id": "f4094aa1-d85e-4dab-bf0b-64e6cc0432de",
+  "binary": "audit_csv",
+  "strategy": "forward_window_lookahead",
+  "provider": "none",
+  "model": "n/a (deterministic, no LLM call)",
+  "started_at": "2026-08-30T07:16:57.052527852+00:00",
+  "steps": [
+    {
+      "type": "reasoning",
+      "step": 1,
+      "content": "Loaded 400 bars and 1 feature column(s) from CSV; execution_offset=1. No LLM in this path -- the shift-test is deterministic."
+    },
+    {
+      "type": "tool_call",
+      "step": 2,
+      "tool": "shift_test",
+      "input": {
+        "column": "feature",
+        "execution_offset": 1
+      }
+    },
+    {
+      "type": "tool_output",
+      "step": 3,
+      "output": {
+        "column": "feature",
+        "delta": 1.6389437795459747,
+        "sharpe_original": 8.356548615836582,
+        "sharpe_shifted": 6.717604836290607,
+        "verdict": "Leaky"
+      }
+    },
+    {
+      "type": "verification",
+      "step": 4,
+      "content": "worst (most robust) delta across 1 column(s) = 1.639; threshold 1"
+    },
+    {
+      "type": "final_verdict",
+      "step": 5,
+      "verdict": "LEAKY",
+      "sharpe_delta": 1.6389437795459747,
+      "confidence": "deterministic shift-test on user-supplied CSV; no LLM, temporal axis only; absolute-Sharpe ceiling not calibrated for this market"
+    }
+  ],
+  "tokens_used": {
+    "input": 0,
+    "output": 0
+  },
+  "wall_clock_ms": 0,
+  "finished_at": "2026-08-30T07:16:57.052599308+00:00"
+}

@@ -1,0 +1,114 @@
+{
+  "run_id": "dac06ab9-6d56-4eab-a861-bfa44607c62c",
+  "binary": "advanced",
+  "strategy": "forward_volatility_breakout",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "started_at": "2026-08-30T07:24:14.066805617+00:00",
+  "steps": [
+    {
+      "type": "reasoning",
+      "step": 1,
+      "content": "Read a 1970-byte strategy (comments stripped before showing the LLM); three tools are available (static_scan, shift_test, slippage_test)."
+    },
+    {
+      "type": "tool_call",
+      "step": 2,
+      "tool": "static_scan",
+      "input": {
+        "strategy": "forward_volatility_breakout"
+      }
+    },
+    {
+      "type": "tool_output",
+      "step": 3,
+      "output": {
+        "findings": [
+          {
+            "message": "found `i + ...` bounding a window/index -- this reaches forward from the current bar rather than back from it, the opposite of a trailing window.",
+            "rule": "SA-FORWARD-WINDOW"
+          },
+          {
+            "message": "found `.iter().sum()` on what looks like the whole series (not a sliced sub-range) -- a statistic computed over the full dataset is only knowable in hindsight.",
+            "rule": "SA-GLOBAL-STAT"
+          }
+        ]
+      }
+    },
+    {
+      "type": "tool_call",
+      "step": 4,
+      "tool": "shift_test",
+      "input": {
+        "hypothesis": "The forward_moments function slices from i to i + window - 1, looking forward into the future from bar i, which introduces clear temporal look-ahead bias.",
+        "strategy": "forward_volatility_breakout"
+      }
+    },
+    {
+      "type": "tool_output",
+      "step": 5,
+      "output": {
+        "components": [
+          {
+            "delta": 2.717301997381771,
+            "name": "forward_mean_deviation",
+            "verdict": "Leaky"
+          },
+          {
+            "delta": -0.2358959597445145,
+            "name": "forward_std_deviation",
+            "verdict": "Leaky"
+          }
+        ],
+        "delta": -0.2358959597445145,
+        "sharpe_original": 0.31782066137297693,
+        "sharpe_shifted": 0.5537166211174914
+      }
+    },
+    {
+      "type": "tool_call",
+      "step": 6,
+      "tool": "slippage_test",
+      "input": {
+        "strategy": "forward_volatility_breakout"
+      }
+    },
+    {
+      "type": "tool_output",
+      "step": 7,
+      "output": {
+        "delta": 0.0,
+        "sharpe_as_declared": 0.31782066137297693,
+        "sharpe_honest_fill": 0.31782066137297693
+      }
+    },
+    {
+      "type": "reasoning",
+      "step": 8,
+      "content": "LEAKY\n\n**Justification:**\n- **Temporal Axis:** The static scan and source code show `forward_moments` uses a window from `i` to `i + self.window - 1`, directly accessing future bars (`i` onwards). The `shift_test` confirms substantial changes in Sharpe upon shifting, and the component breakdown flags both features as leaky.\n- **Execution-Realism Axis:** The `slippage_test` returned a delta of `0.000`, meaning the declared fill-price assumption matches the honest close-to-close fill.\n- **Verdict:** Because the temporal look-ahead is severe and explicitly built into the feature definitions (`forward_moments`), the strategy is classified as LEAKY."
+    },
+    {
+      "type": "verification",
+      "step": 9,
+      "content": "shift_test: sharpe_original=0.318 sharpe_shifted=0.554 delta=-0.236 -> two-signal rule says Leaky"
+    },
+    {
+      "type": "verification",
+      "step": 10,
+      "content": "slippage_test: sharpe_as_declared=0.318 sharpe_honest_fill=0.318 delta=0.000 -> Clean"
+    },
+    {
+      "type": "final_verdict",
+      "step": 11,
+      "verdict": "LEAKY",
+      "sharpe_delta": -0.2358959597445145,
+      "confidence": "model agrees with the combined empirical rule"
+    }
+  ],
+  "tokens_used": {
+    "input": 7522,
+    "output": 228
+  },
+  "wall_clock_ms": 51027,
+  "finished_at": "2026-08-30T07:25:05.094597082+00:00"
+}

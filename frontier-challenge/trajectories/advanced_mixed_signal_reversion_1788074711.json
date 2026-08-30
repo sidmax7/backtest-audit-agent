@@ -1,0 +1,114 @@
+{
+  "run_id": "d5891c09-ce43-432c-b315-13381114464a",
+  "binary": "advanced",
+  "strategy": "mixed_signal_reversion",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "started_at": "2026-08-30T07:25:06.288747086+00:00",
+  "steps": [
+    {
+      "type": "reasoning",
+      "step": 1,
+      "content": "Read a 1677-byte strategy (comments stripped before showing the LLM); three tools are available (static_scan, shift_test, slippage_test)."
+    },
+    {
+      "type": "tool_call",
+      "step": 2,
+      "tool": "static_scan",
+      "input": {
+        "strategy": "mixed_signal_reversion"
+      }
+    },
+    {
+      "type": "tool_output",
+      "step": 3,
+      "output": {
+        "findings": [
+          {
+            "message": "found `i + ...` bounding a window/index -- this reaches forward from the current bar rather than back from it, the opposite of a trailing window.",
+            "rule": "SA-FORWARD-WINDOW"
+          },
+          {
+            "message": "found `.iter().sum()` on what looks like the whole series (not a sliced sub-range) -- a statistic computed over the full dataset is only knowable in hindsight.",
+            "rule": "SA-GLOBAL-STAT"
+          }
+        ]
+      }
+    },
+    {
+      "type": "tool_call",
+      "step": 4,
+      "tool": "shift_test",
+      "input": {
+        "hypothesis": "The forward_window_component looks ahead by using closes[i..=end] where end is bounded by i + self.window - 1, which uses future prices.",
+        "strategy": "mixed_signal_reversion"
+      }
+    },
+    {
+      "type": "tool_output",
+      "step": 5,
+      "output": {
+        "components": [
+          {
+            "delta": 2.2722482002702304,
+            "name": "prior_return_component",
+            "verdict": "Clean"
+          },
+          {
+            "delta": 2.717301997381771,
+            "name": "forward_window_component",
+            "verdict": "Leaky"
+          }
+        ],
+        "delta": 2.8716344485388343,
+        "sharpe_original": 3.783781178314942,
+        "sharpe_shifted": 0.9121467297761079
+      }
+    },
+    {
+      "type": "tool_call",
+      "step": 6,
+      "tool": "slippage_test",
+      "input": {
+        "strategy": "mixed_signal_reversion"
+      }
+    },
+    {
+      "type": "tool_output",
+      "step": 7,
+      "output": {
+        "delta": 0.0,
+        "sharpe_as_declared": 3.783781178314942,
+        "sharpe_honest_fill": 3.783781178314942
+      }
+    },
+    {
+      "type": "reasoning",
+      "step": 8,
+      "content": "LEAKY\n\n**Justification:**\n- **Static Analysis & Temporal Axis:** `static_scan` flagged a forward-reaching window in `forward_window_component`. The `shift_test` confirmed this decisively, showing a massive drop in Sharpe ratio from 3.784 to 0.912 when shifted forward (a delta of 2.872), with the per-feature breakdown specifically pointing to `forward_window_component` as carrying the look-ahead leak (delta of 2.717).\n- **Execution-Realism Axis:** The `slippage_test` returned a delta of 0.000, indicating the strategy uses the honest default execution fill assumption.\n- **Conclusion:** Despite honest execution assumptions, the strategy is **LEAKY** due to explicit look-ahead bias in its feature computation (`forward_window_component`)."
+    },
+    {
+      "type": "verification",
+      "step": 9,
+      "content": "shift_test: sharpe_original=3.784 sharpe_shifted=0.912 delta=2.872 -> two-signal rule says Leaky"
+    },
+    {
+      "type": "verification",
+      "step": 10,
+      "content": "slippage_test: sharpe_as_declared=3.784 sharpe_honest_fill=3.784 delta=0.000 -> Clean"
+    },
+    {
+      "type": "final_verdict",
+      "step": 11,
+      "verdict": "LEAKY",
+      "sharpe_delta": 2.8716344485388343,
+      "confidence": "model agrees with the combined empirical rule"
+    }
+  ],
+  "tokens_used": {
+    "input": 7226,
+    "output": 260
+  },
+  "wall_clock_ms": 4803,
+  "finished_at": "2026-08-30T07:25:11.092095532+00:00"
+}

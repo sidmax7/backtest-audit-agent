@@ -1,0 +1,105 @@
+{
+  "run_id": "69f89ce3-4ca7-4194-96a3-aea6b8bb94b6",
+  "binary": "advanced",
+  "strategy": "execution_timing_mismatch",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "started_at": "2026-08-30T07:24:08.200781830+00:00",
+  "steps": [
+    {
+      "type": "reasoning",
+      "step": 1,
+      "content": "Read a 639-byte strategy (comments stripped before showing the LLM); three tools are available (static_scan, shift_test, slippage_test)."
+    },
+    {
+      "type": "tool_call",
+      "step": 2,
+      "tool": "static_scan",
+      "input": {
+        "strategy": "execution_timing_mismatch"
+      }
+    },
+    {
+      "type": "tool_output",
+      "step": 3,
+      "output": {
+        "findings": [
+          {
+            "message": "execution_offset() returns 0, not the honest default of 1 -- this strategy may be betting on a return that's already realized by the time its feature is computed.",
+            "rule": "SA-EXEC-OFFSET"
+          }
+        ]
+      }
+    },
+    {
+      "type": "tool_call",
+      "step": 4,
+      "tool": "shift_test",
+      "input": {
+        "hypothesis": "The execution_offset of 0 combined with feature calculation using close prices allows instantaneous look-ahead or same-bar fill, but trailing_mean itself uses past windows. Let's test if shifting the feature degrades the Sharpe ratio.",
+        "strategy": "execution_timing_mismatch"
+      }
+    },
+    {
+      "type": "tool_output",
+      "step": 5,
+      "output": {
+        "components": [
+          {
+            "delta": 10.345648784695182,
+            "name": "feature",
+            "verdict": "Leaky"
+          }
+        ],
+        "delta": 10.345648784695182,
+        "sharpe_original": 9.413088554732544,
+        "sharpe_shifted": -0.9325602299626385
+      }
+    },
+    {
+      "type": "tool_call",
+      "step": 6,
+      "tool": "slippage_test",
+      "input": {
+        "strategy": "execution_timing_mismatch"
+      }
+    },
+    {
+      "type": "tool_output",
+      "step": 7,
+      "output": {
+        "delta": 0.0,
+        "sharpe_as_declared": 9.413088554732544,
+        "sharpe_honest_fill": 9.413088554732544
+      }
+    },
+    {
+      "type": "reasoning",
+      "step": 8,
+      "content": "LEAKY\n\n**Justification:**\n- **Temporal Axis (`shift_test`):** The original Sharpe ratio is 9.413, which collapses to -0.933 when shifted forward by one bar ($\\Delta = 10.346$). This drastic drop confirms that the strategy's predictive power relies on contemporaneous or unshifted alignment of the feature with the current bar's close.\n- **Execution Axis (`slippage_test`):** The execution offset of `0` means the strategy evaluates its signal and executes on the same bar without waiting for the next bar (`execution_offset() -> 0`). Although `slippage_test` shows a delta of `0.000` (meaning the declared fill-price assumption matches the honest default in this specific test harness setup), the static scan and temporal test together confirm that zero execution offset combined with concurrent close-price usage constitutes look-ahead bias. Furthermore, an original Sharpe ratio of 9.413 in a synthetic market with ~1% daily volatility is implustainably high and indicative of artifactual leakage."
+    },
+    {
+      "type": "verification",
+      "step": 9,
+      "content": "shift_test: sharpe_original=9.413 sharpe_shifted=-0.933 delta=10.346 -> two-signal rule says Leaky"
+    },
+    {
+      "type": "verification",
+      "step": 10,
+      "content": "slippage_test: sharpe_as_declared=9.413 sharpe_honest_fill=9.413 delta=0.000 -> Clean"
+    },
+    {
+      "type": "final_verdict",
+      "step": 11,
+      "verdict": "LEAKY",
+      "sharpe_delta": 10.345648784695182,
+      "confidence": "model agrees with the combined empirical rule"
+    }
+  ],
+  "tokens_used": {
+    "input": 5707,
+    "output": 314
+  },
+  "wall_clock_ms": 4678,
+  "finished_at": "2026-08-30T07:24:12.879280553+00:00"
+}

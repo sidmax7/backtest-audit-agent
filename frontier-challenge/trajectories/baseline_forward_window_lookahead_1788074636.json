@@ -1,0 +1,28 @@
+{
+  "run_id": "88a3185c-ab59-459e-b9d7-26fe3ed71565",
+  "binary": "baseline",
+  "strategy": "forward_window_lookahead",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "started_at": "2026-08-30T07:23:54.886342634+00:00",
+  "steps": [
+    {
+      "type": "reasoning",
+      "step": 1,
+      "content": "Single-shot read of a 688-byte strategy (comments stripped before showing the LLM), no tool use available."
+    },
+    {
+      "type": "final_verdict",
+      "step": 2,
+      "verdict": "LEAKY",
+      "sharpe_delta": 0.0,
+      "confidence": "unverified (single LLM call, no empirical check)"
+    }
+  ],
+  "tokens_used": {
+    "input": 330,
+    "output": 68
+  },
+  "wall_clock_ms": 1433,
+  "finished_at": "2026-08-30T07:23:56.319692307+00:00"
+}

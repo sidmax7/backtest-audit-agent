@@ -1,0 +1,28 @@
+{
+  "run_id": "30e38fe0-580f-40fe-8145-3d2c6f4b1470",
+  "binary": "baseline",
+  "strategy": "global_normalization_leak",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "started_at": "2026-08-30T07:24:01.666774545+00:00",
+  "steps": [
+    {
+      "type": "reasoning",
+      "step": 1,
+      "content": "Single-shot read of a 769-byte strategy (comments stripped before showing the LLM), no tool use available."
+    },
+    {
+      "type": "final_verdict",
+      "step": 2,
+      "verdict": "LEAKY",
+      "sharpe_delta": 0.0,
+      "confidence": "unverified (single LLM call, no empirical check)"
+    }
+  ],
+  "tokens_used": {
+    "input": 361,
+    "output": 62
+  },
+  "wall_clock_ms": 1109,
+  "finished_at": "2026-08-30T07:24:02.775791810+00:00"
+}

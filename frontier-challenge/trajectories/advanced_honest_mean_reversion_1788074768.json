@@ -1,0 +1,110 @@
+{
+  "run_id": "9a24a6a5-be9f-49d9-b418-00c613e4c32b",
+  "binary": "advanced",
+  "strategy": "honest_mean_reversion",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "started_at": "2026-08-30T07:25:18.492089577+00:00",
+  "steps": [
+    {
+      "type": "reasoning",
+      "step": 1,
+      "content": "Read a 463-byte strategy (comments stripped before showing the LLM); three tools are available (static_scan, shift_test, slippage_test)."
+    },
+    {
+      "type": "tool_call",
+      "step": 2,
+      "tool": "static_scan",
+      "input": {
+        "strategy": "honest_mean_reversion"
+      }
+    },
+    {
+      "type": "tool_output",
+      "step": 3,
+      "output": {
+        "findings": []
+      }
+    },
+    {
+      "type": "tool_call",
+      "step": 4,
+      "tool": "shift_test",
+      "input": {
+        "hypothesis": "The feature uses bars[i-1].close relative to bars[i].close, which refers only to past data relative to bar i, but let's test if shifting reveals any unintended forward reference.",
+        "strategy": "honest_mean_reversion"
+      }
+    },
+    {
+      "type": "tool_output",
+      "step": 5,
+      "output": {
+        "components": [
+          {
+            "delta": 2.2722482002702304,
+            "name": "feature",
+            "verdict": "Clean"
+          }
+        ],
+        "delta": 2.2722482002702304,
+        "sharpe_original": 1.7434087944764625,
+        "sharpe_shifted": -0.5288394057937681
+      }
+    },
+    {
+      "type": "tool_call",
+      "step": 6,
+      "tool": "slippage_test",
+      "input": {
+        "strategy": "honest_mean_reversion"
+      }
+    },
+    {
+      "type": "tool_output",
+      "step": 7,
+      "output": {
+        "delta": 0.0,
+        "sharpe_as_declared": 1.7434087944764625,
+        "sharpe_honest_fill": 1.7434087944764625
+      }
+    },
+    {
+      "type": "reasoning",
+      "step": 8,
+      "content": "LEAKY\n\n**Justification:**\n- **Temporal Axis (`shift_test`):** The original Sharpe of 1.743 collapses to -0.529 when shifted forward by one bar (a delta of 2.272). This sharp degradation proves that the strategy relies strictly on the precise, unshifted temporal relationship between bar $i-1$ and bar $i$ (fading the prior bar's return). There is no temporal look-ahead bias here; the feature uses past information only.\n- **Execution-Realism Axis (`slippage_test`):** However, `slippage_test` returned `sharpe_as_declared = 1.743` and `sharpe_honest_fill = 1.743` (delta = 0.000). Wait, let's examine the original Sharpe itself: 1.743 in a synthetic market with ~1% daily volatility and a weak mean-reversion edge is extraordinarily high. Furthermore, since `PriorReturnFade` implements the default trait behavior for `realized_return` (which fills at the close or open of bar $i$), it avoids execution discrepancies, but the high Sharpe ratio indicates unrealistic execution assumptions or overfitting to the specific synthetic price series generator. Since `shift_test` shows a legitimate temporal signal and `slippage_test` shows identical fills, the strategy's temporal structure is clean, but the overall edge magnitude combined with the high Sharpe ratio points to standard structural limitations. \n\nWait, let's re-read the prompt and tool definitions: \"An honest strategy's temporal edge is fragile: shifting it degrades performance toward noise... Separately, a large positive slippage_test delta means the strategy's own fill assumption -- not its feature -- is doing real, unearned work.\" Here, `shift_test` degraded (sharpe dropped from 1.743 to -0.529), which indicates a *genuine* temporal edge (as expected for a true mean-reversion signal on past returns), not a leak! A leaky strategy is robust to the shift, whereas an honest strategy degrades. \n\nLet's check `slippage_test`: delta is 0.000. \n\nTherefore, the strategy is actually **CLEAN** temporally (it degrades on shift because it's a real lagged feature) and clean on execution realism (delta = 0). Let's provide the correct verdict based on the tool outputs.\n\nWait, let's review the prompt's instructions: \"Your final verdict must be grounded in shift_test AND slippage_test... An honest strategy's temporal edge is fragile: shifting it degrades performance toward noise.\" \nSince shifting it degraded performance from 1.743 to -0.529, this confirms the strategy is honest on the temporal axis. And `slippage_test` delta is 0.0, meaning no execution fill leakage. \n\nTherefore, the verdict is CLEAN.\n\nCLEAN\n\n**Justification:**\n- **Temporal Axis (`shift_test`):** Shifting the feature forward by one bar degrades the Sharpe ratio from 1.743 to -0.529 (a delta of 2.272). As noted in the audit criteria, an honest strategy's temporal edge is fragile and degrades toward noise when shifted, confirming there is no temporal look-ahead bias.\n- **Execution-Realism Axis (`slippage_test`):** The slippage test reports a delta of 0.000 (`sharpe_as_declared` = 1.743, `sharpe_honest_fill` = 1.743), indicating that the strategy's fill assumptions do not introduce artificial leakage."
+    },
+    {
+      "type": "verification",
+      "step": 9,
+      "content": "shift_test: sharpe_original=1.743 sharpe_shifted=-0.529 delta=2.272 -> two-signal rule says Clean"
+    },
+    {
+      "type": "verification",
+      "step": 10,
+      "content": "slippage_test: sharpe_as_declared=1.743 sharpe_honest_fill=1.743 delta=0.000 -> Clean"
+    },
+    {
+      "type": "reasoning",
+      "step": 11,
+      "content": "Model's verdict (Some(Leaky)) disagrees with the combined empirical rule (Clean, temporal=Clean, slippage=Clean). Offering one alternative-hypothesis pass."
+    },
+    {
+      "type": "verification",
+      "step": 12,
+      "content": "alternate-hypothesis pass -> Some(Leaky)"
+    },
+    {
+      "type": "final_verdict",
+      "step": 13,
+      "verdict": "LEAKY",
+      "sharpe_delta": 2.2722482002702304,
+      "confidence": "model disagrees with the combined empirical rule after retry; reporting model's stated verdict"
+    }
+  ],
+  "tokens_used": {
+    "input": 7881,
+    "output": 1021
+  },
+  "wall_clock_ms": 49823,
+  "finished_at": "2026-08-30T07:26:08.315404833+00:00"
+}

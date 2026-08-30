@@ -1,0 +1,28 @@
+{
+  "run_id": "c51c7633-489a-4cf1-9619-83342be96513",
+  "binary": "baseline",
+  "strategy": "forward_volatility_breakout",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "started_at": "2026-08-30T07:24:12.880965583+00:00",
+  "steps": [
+    {
+      "type": "reasoning",
+      "step": 1,
+      "content": "Single-shot read of a 1970-byte strategy (comments stripped before showing the LLM), no tool use available."
+    },
+    {
+      "type": "final_verdict",
+      "step": 2,
+      "verdict": "LEAKY",
+      "sharpe_delta": 0.0,
+      "confidence": "unverified (single LLM call, no empirical check)"
+    }
+  ],
+  "tokens_used": {
+    "input": 712,
+    "output": 61
+  },
+  "wall_clock_ms": 1184,
+  "finished_at": "2026-08-30T07:24:14.065308874+00:00"
+}

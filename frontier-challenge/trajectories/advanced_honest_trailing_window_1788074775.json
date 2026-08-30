@@ -1,0 +1,110 @@
+{
+  "run_id": "6ea904bc-bc8f-4a5e-882c-2d361db8b3d2",
+  "binary": "advanced",
+  "strategy": "honest_trailing_window",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "started_at": "2026-08-30T07:26:09.435919715+00:00",
+  "steps": [
+    {
+      "type": "reasoning",
+      "step": 1,
+      "content": "Read a 563-byte strategy (comments stripped before showing the LLM); three tools are available (static_scan, shift_test, slippage_test)."
+    },
+    {
+      "type": "tool_call",
+      "step": 2,
+      "tool": "static_scan",
+      "input": {
+        "strategy": "honest_trailing_window"
+      }
+    },
+    {
+      "type": "tool_output",
+      "step": 3,
+      "output": {
+        "findings": []
+      }
+    },
+    {
+      "type": "tool_call",
+      "step": 4,
+      "tool": "shift_test",
+      "input": {
+        "hypothesis": "The trailing_mean helper uses past data up to index i, so shifting the feature forward by 1 bar will degrade performance.",
+        "strategy": "honest_trailing_window"
+      }
+    },
+    {
+      "type": "tool_output",
+      "step": 5,
+      "output": {
+        "components": [
+          {
+            "delta": 2.273620081253682,
+            "name": "feature",
+            "verdict": "Clean"
+          }
+        ],
+        "delta": 2.273620081253682,
+        "sharpe_original": 1.7473140634232902,
+        "sharpe_shifted": -0.5263060178303919
+      }
+    },
+    {
+      "type": "tool_call",
+      "step": 6,
+      "tool": "slippage_test",
+      "input": {
+        "strategy": "honest_trailing_window"
+      }
+    },
+    {
+      "type": "tool_output",
+      "step": 7,
+      "output": {
+        "delta": 0.0,
+        "sharpe_as_declared": 1.7473140634232902,
+        "sharpe_honest_fill": 1.7473140634232902
+      }
+    },
+    {
+      "type": "reasoning",
+      "step": 8,
+      "content": "LEAKY\n\nThe strategy is **LEAKY** on the temporal axis. \n\n**Justification:**\n- **Temporal Axis (`shift_test`)**: The original Sharpe ratio is 1.747, which collapses to -0.526 when the feature is shifted forward by one bar (a delta of 2.274). Furthermore, the original Sharpe of 1.747 is implausibly high for a synthetic market with ~1% daily volatility and a weak mean-reversion edge.\n- **Execution-Realism Axis (`slippage_test`)**: The Sharpe ratio under the strategy's declared fill-price assumption matches the honest close-to-close default exactly (`delta=0.000`), meaning there is no fill-price look-ahead bias in the execution assumption itself.\n- **Conclusion**: Despite clean execution fill assumptions, the temporal shift test confirms that the strategy relies on forward-looking or contaminated temporal features (likely originating within the `trailing_mean` helper function implementation)."
+    },
+    {
+      "type": "verification",
+      "step": 9,
+      "content": "shift_test: sharpe_original=1.747 sharpe_shifted=-0.526 delta=2.274 -> two-signal rule says Clean"
+    },
+    {
+      "type": "verification",
+      "step": 10,
+      "content": "slippage_test: sharpe_as_declared=1.747 sharpe_honest_fill=1.747 delta=0.000 -> Clean"
+    },
+    {
+      "type": "reasoning",
+      "step": 11,
+      "content": "Model's verdict (Some(Leaky)) disagrees with the combined empirical rule (Clean, temporal=Clean, slippage=Clean). Offering one alternative-hypothesis pass."
+    },
+    {
+      "type": "verification",
+      "step": 12,
+      "content": "alternate-hypothesis pass -> None"
+    },
+    {
+      "type": "final_verdict",
+      "step": 13,
+      "verdict": "CLEAN",
+      "sharpe_delta": 2.273620081253682,
+      "confidence": "model gave no parseable verdict; fell back to the combined empirical rule"
+    }
+  ],
+  "tokens_used": {
+    "input": 7322,
+    "output": 305
+  },
+  "wall_clock_ms": 5849,
+  "finished_at": "2026-08-30T07:26:15.285740443+00:00"
+}

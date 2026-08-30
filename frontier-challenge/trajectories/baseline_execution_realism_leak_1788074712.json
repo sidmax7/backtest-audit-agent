@@ -1,0 +1,28 @@
+{
+  "run_id": "43588cb0-b09e-4022-a9ed-000c7a478b89",
+  "binary": "baseline",
+  "strategy": "execution_realism_leak",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "started_at": "2026-08-30T07:25:11.093823544+00:00",
+  "steps": [
+    {
+      "type": "reasoning",
+      "step": 1,
+      "content": "Single-shot read of a 890-byte strategy (comments stripped before showing the LLM), no tool use available."
+    },
+    {
+      "type": "final_verdict",
+      "step": 2,
+      "verdict": "LEAKY",
+      "sharpe_delta": 0.0,
+      "confidence": "unverified (single LLM call, no empirical check)"
+    }
+  ],
+  "tokens_used": {
+    "input": 416,
+    "output": 87
+  },
+  "wall_clock_ms": 1105,
+  "finished_at": "2026-08-30T07:25:12.199599183+00:00"
+}

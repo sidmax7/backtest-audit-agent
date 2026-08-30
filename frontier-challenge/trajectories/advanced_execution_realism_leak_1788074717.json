@@ -1,0 +1,100 @@
+{
+  "run_id": "6b3309de-a201-43be-bd6f-83aa8fb45f5a",
+  "binary": "advanced",
+  "strategy": "execution_realism_leak",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "started_at": "2026-08-30T07:25:12.201068785+00:00",
+  "steps": [
+    {
+      "type": "reasoning",
+      "step": 1,
+      "content": "Read a 890-byte strategy (comments stripped before showing the LLM); three tools are available (static_scan, shift_test, slippage_test)."
+    },
+    {
+      "type": "tool_call",
+      "step": 2,
+      "tool": "static_scan",
+      "input": {
+        "strategy": "execution_realism_leak"
+      }
+    },
+    {
+      "type": "tool_output",
+      "step": 3,
+      "output": {
+        "findings": []
+      }
+    },
+    {
+      "type": "tool_call",
+      "step": 4,
+      "tool": "shift_test",
+      "input": {
+        "hypothesis": "The feature uses only past returns (prev_ret = bars[i].close - bars[i-1].close), so shifting the feature should degrade performance.",
+        "strategy": "execution_realism_leak"
+      }
+    },
+    {
+      "type": "tool_output",
+      "step": 5,
+      "output": {
+        "components": [
+          {
+            "delta": 2.2722482002702304,
+            "name": "feature",
+            "verdict": "Clean"
+          }
+        ],
+        "delta": 2.2722482002702304,
+        "sharpe_original": 1.7434087944764625,
+        "sharpe_shifted": -0.5288394057937681
+      }
+    },
+    {
+      "type": "tool_call",
+      "step": 6,
+      "tool": "slippage_test",
+      "input": {
+        "strategy": "execution_realism_leak"
+      }
+    },
+    {
+      "type": "tool_output",
+      "step": 7,
+      "output": {
+        "delta": 4.412264576114245,
+        "sharpe_as_declared": 6.155673370590708,
+        "sharpe_honest_fill": 1.7434087944764625
+      }
+    },
+    {
+      "type": "reasoning",
+      "step": 8,
+      "content": "LEAKY\n\n**Justification:**\n- **Temporal Axis (`shift_test`):** The strategy's feature computation uses only past data (`bars[i - 1]` and `bars[i]`), which is chronologically valid. Shifting the feature forward degrades the Sharpe ratio significantly (from `1.743` down to `-0.529`), indicating that temporal look-ahead is absent from the feature itself.\n- **Execution-Realism Axis (`slippage_test`):** However, the strategy incorporates a highly unrealistic fill assumption in `realized_return()`, adding an extra intra-bar price improvement term (`(bar.close - bar.low) / prev_bar.close` for long positions and `-(bar.high - bar.close) / prev_bar.close` for short positions). When forced to use the honest close-to-close fill, the Sharpe ratio plummets by `4.412` (dropping from an absurd `6.156` down to `1.743`). This massive delta proves that the strategy's apparent performance relies heavily on unearned execution advantages baked into the PnL calculation."
+    },
+    {
+      "type": "verification",
+      "step": 9,
+      "content": "shift_test: sharpe_original=1.743 sharpe_shifted=-0.529 delta=2.272 -> two-signal rule says Clean"
+    },
+    {
+      "type": "verification",
+      "step": 10,
+      "content": "slippage_test: sharpe_as_declared=6.156 sharpe_honest_fill=1.743 delta=4.412 -> Leaky"
+    },
+    {
+      "type": "final_verdict",
+      "step": 11,
+      "verdict": "LEAKY",
+      "sharpe_delta": 2.2722482002702304,
+      "confidence": "model agrees with the combined empirical rule"
+    }
+  ],
+  "tokens_used": {
+    "input": 6079,
+    "output": 320
+  },
+  "wall_clock_ms": 5245,
+  "finished_at": "2026-08-30T07:25:17.446765067+00:00"
+}
